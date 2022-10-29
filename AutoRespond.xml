@@ -1,0 +1,611 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="AutoRespond.lua"/>
+
+	<Frame name="AutoRespondFrame" hidden="true" parent="UIParent" frameStrata="MEDIUM" movable="true" enableMouse="true" inherits="BackdropTemplate">
+		<Size x="600" y="320" />
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_AUTO_RESPONSE_FRAME" type="global"/>
+			<KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_TitleTex" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="300" y="40" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset x="0" y="10" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_TitleText" inherits="GameFontNormal" text="AutoRespond" justifyH="CENTER">
+					<Size x="200" y="30" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_TitleTex">
+							<Offset x="0" y="3" />
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="0.8" b="0" />
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Frame for the response //-->
+			<Frame name="$parent_ResponseFrame" inherits="BackdropTemplate">
+				<Size x="400" y="270" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset x="0" y="-50" />
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<EditBox name="$parent_ListKeywords" multiLine="false" autoFocus="false" letters="0">
+						<Size x="200" y="24" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent" >
+								<Offset x="15" y="-10" />
+							</Anchor>
+						</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_AUTO_RESPONSE_FRAME" type="global"/>
+			<KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+		</KeyValues>						
+						<Scripts>
+							<OnEscapePressed>self:ClearFocus();</OnEscapePressed>
+							<OnShow>AutoRespond_UpdateKeywords();</OnShow>
+							<OnHide>AutoRespond_SaveKeywords();</OnHide>
+							<OnEditFocusLost>AutoRespond_SaveKeywords();</OnEditFocusLost>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall" />
+					</EditBox>
+					<Button name="$parent_ButtonListKeywords" inherits="BackdropTemplate">
+						<Size x="210" y="24" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_ListKeywords">
+								<Offset x="-5" y="0" />
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize><AbsValue val="16"/></EdgeSize>
+							<TileSize><AbsValue val="16"/></TileSize>
+							<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5"/></BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parent_Label" inherits="GameFontNormalSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$parent" >
+											<Offset x="5" y="0" />
+										</Anchor>
+									</Anchors>
+									<Color r="1.0" g="0.8" b="0" />
+								</FontString>
+							</Layer>
+						</Layers>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_AUTO_RESPONSE_FRAME" type="global"/>
+			<KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+		</KeyValues>						
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."_Label"):SetText(AUTO_RESPOND_LABEL_KEYWORDS_TEXT);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+								self:OnBackdropLoaded()
+							</OnLoad>
+							<OnShow>AutoRespond_UpdateButtonListKeywords();</OnShow>
+							<OnClick>getglobal(self:GetParent():GetName().."_ListKeywords"):SetFocus();</OnClick>
+						</Scripts>
+					</Button>
+					
+					<ScrollFrame name="$parent_ScrollFrameResponse" inherits="UIPanelScrollFrameTemplate">
+						<Size x="350" y="166" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonListKeywords">
+								<Offset x="5" y="-25"/>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<EditBox name="$parent_ListResponse" multiLine="true" autoFocus="false" letters="0">
+								<Size x="350" y="166"/>
+								<Scripts>
+									<OnTextChanged>								
+										local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
+										self:GetParent():UpdateScrollChildRect();
+										local min;
+										local max;
+										min, max = scrollBar:GetMinMaxValues();
+										if ( max > 0 and (self.max ~= max) ) then
+											self.max = max;
+											scrollBar:SetValue(max);
+										end
+									</OnTextChanged>
+									<OnEscapePressed>self:ClearFocus();</OnEscapePressed>
+									<OnShow>AutoRespond_UpdateResponse();</OnShow>
+									<OnHide>AutoRespond_SaveResponse();</OnHide>
+									<OnEditFocusLost>AutoRespond_SaveResponse();</OnEditFocusLost>
+								</Scripts>
+								<FontString inherits="GameFontHighlightSmall"/>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="$parent_ButtonListResponse" inherits="BackdropTemplate">
+						<Size x="362" y="180"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_ScrollFrameResponse" >
+								<Offset x="-6" y="7"/>
+							</Anchor>
+						</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_AUTO_RESPONSE_FRAME" type="global"/>
+			<KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+		</KeyValues>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parent_Label" inherits="GameFontNormalSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+											<Offset x="5" y="0" />
+										</Anchor>
+									</Anchors>
+									<Color r="1.0" g="0.8" b="0" />
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."_Label"):SetText(AUTO_RESPOND_LABEL_RESPONSE_TEXT);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+								self:OnBackdropLoaded()
+							</OnLoad>
+							<OnShow>AutoRespond_UpdateButtonListResponse();</OnShow>
+							<OnClick>getglobal(self:GetParent():GetName().."_ScrollFrameResponse_ListResponse"):SetFocus();</OnClick>
+						</Scripts>
+					</Button>
+					
+					<Button name="$parent_ButtonAddLink" inherits="UIPanelButtonTemplate">
+						<Size x="120" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+								<Offset x="10" y="10"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_LINK_TEXT)</OnLoad>
+							<OnShow>AutoRespond_ButtonAddLinkOnShow();</OnShow>
+							<OnClick>AutoRespond_ButtonAddLinkOnClick();</OnClick>
+						</Scripts>
+					</Button>
+					
+					<Button name="$parent_ButtonAddReagent" inherits="UIPanelButtonTemplate">
+						<Size x="120" y="24"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_ButtonAddLink">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_REAGENT_TEXT);</OnLoad>
+							<OnShow>AutoRespond_ButtonAddReagentOnShow();</OnShow>
+							<OnClick>AutoRespond_ButtonAddReagentOnClick();</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			
+			<!-- Frame for the options //-->
+			<Frame name="$parent_OptionsFrame" inherits="BackdropTemplate">
+				<Size x="200" y="300" />
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent" />
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_ButtonActive" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset x="5" y="-20"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_ACTIVE_TEXT);</OnLoad>
+							<OnShow>AutoRespond_UpdateActive();</OnShow>
+							<OnClick>AutoRespond_ToggleActive();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonScript" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonActive">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_SCRIPT_TEXT);</OnLoad>
+							<OnShow>AutoRespond_UpdateScript();</OnShow>
+							<OnClick>AutoRespond_ToggleScript();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonCanGuild" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonScript">
+								<Offset x="0" y="-10"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_CANGUILD_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitCanGuild();</OnShow>
+							<OnClick>AutoRespond_ToggleCanGuild();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonCanParty" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonCanGuild">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_CANGROUP_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitCanParty();</OnShow>
+							<OnClick>AutoRespond_ToggleCanParty();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonCanRaid" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonCanParty">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_CANRAID_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitCanRaid();</OnShow>
+							<OnClick>AutoRespond_ToggleCanRaid();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonCanFriends" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonCanRaid">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_CANFRIENDS_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitCanFriends();</OnShow>
+							<OnClick>AutoRespond_ToggleCanFriends();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<EditBox name="$parent_ListCanNames" multiLine="false" autoFocus="false">
+						<Size x="150" y="12" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonCanFriends" >
+								<Offset x="10" y="-15" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEscapePressed>self:ClearFocus();</OnEscapePressed>
+							<OnShow>AutoRespond_InitCanNames();</OnShow>
+							<OnHide>AutoRespond_SaveCanNames();</OnHide>
+							<OnEditFocusLost>AutoRespond_SaveCanNames();</OnEditFocusLost>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall" />
+					</EditBox>
+					<Button name="$parent_ButtonListCanNames" inherits="BackdropTemplate">
+						<Size x="160" y="22" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_ListCanNames">
+								<Offset x="-5" y="5" />
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize><AbsValue val="16"/></EdgeSize>
+							<TileSize><AbsValue val="16"/></TileSize>
+							<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5"/></BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parent_Label" inherits="GameFontNormalSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$parent" />
+									</Anchors>
+									<Color r="1.0" g="0.8" b="0" />
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								getglobal(self:GetName().."_Label"):SetText(AUTO_RESPOND_BUTTON_CANNAMES_TEXT);
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+							</OnLoad>
+							<OnShow>AutoRespond_UpdateButtonListCanNames();</OnShow>
+							<OnClick>getglobal(self:GetParent():GetName().."_ListCanNames"):SetFocus();</OnClick>
+						</Scripts>
+					</Button>
+					
+					<CheckButton name="$parent_ButtonTellGuild" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonListCanNames">
+								<Offset x="-5" y="-10"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_RESPONDTOGUILD_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitTellGuild();</OnShow>
+							<OnClick>AutoRespond_ToggleTellGuild();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonTellParty" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonTellGuild">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_RESPONDTOGROUP_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitTellParty();</OnShow>
+							<OnClick>AutoRespond_ToggleTellParty();</OnClick>
+						</Scripts>
+					</CheckButton>
+					
+					<CheckButton name="$parent_ButtonTellRaid" inherits="OptionsCheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ButtonTellParty">
+								<Offset x="0" y="-5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_BUTTON_RESPONDTORAID_TEXT);</OnLoad>
+							<OnShow>AutoRespond_InitTellRaid();</OnShow>
+							<OnClick>AutoRespond_ToggleTellRaid();</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<!-- Buttons for the handling //-->
+			
+			<Button name="$parent_ButtonPrevious" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset x="10" y="-15"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_BEFORE_TEXT);</OnLoad>
+					<OnShow>AutoRespond_ButtonPreviousOnShow();</OnShow>
+					<OnClick>AutoRespond_ButtonPreviousOnClick();</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_ButtonNext" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_ButtonPrevious">
+						<Offset x="10" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_NEXT_TEXT)</OnLoad>
+					<OnShow>AutoRespond_ButtonNextOnShow();</OnShow>
+					<OnClick>AutoRespond_ButtonNextOnClick();</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_ButtonDelete" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_OptionsFrame">
+						<Offset x="-10" y="-15"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_DELETE_TEXT)</OnLoad>
+					<OnShow>AutoRespond_ButtonOnShow();</OnShow>
+					<OnClick>AutoRespond_ButtonDelete();</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_ButtonNew" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_ButtonDelete">
+						<Offset x="-10" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_NEW_TEXT)</OnLoad>
+					<OnClick>AutoRespond_ButtonNew();</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_ButtonExit" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+						<Offset x="-10" y="10"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_EXIT_TEXT)</OnLoad>
+					<OnClick>self:GetParent():Hide();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+
+			<OnLoad>
+				AutoRespond_OnLoad(event, self);
+				self:OnBackdropLoaded()
+			</OnLoad>
+			<OnEvent></OnEvent> <!-- THIS MUST REMAIN EMPTY, IT IS SET IN THE ONLOAD EVENT -->
+			
+			<OnMouseDown>self:StartMoving();</OnMouseDown>
+			<OnMouseUp>self:StopMovingOrSizing();</OnMouseUp>
+			
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AutoRespondOptionsFrame" hidden="true" parent="UIParent" frameStrata="HIGH" movable="true" enableMouse="true" inherits="BackdropTemplate">
+		<Size x="300" y="210" />
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_AUTO_RESPONSE_FRAME" type="global"/>
+			<KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_TitleTex" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="500" y="40" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset x="0" y="10" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_TitleText" inherits="GameFontNormal" text="AutoRespond Options" justifyH="CENTER">
+					<Size x="400" y="30" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_TitleTex">
+							<Offset x="0" y="3" />
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="0.8" b="0" />
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parent_ActiveMod" inherits="OptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset x="5" y="-20"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_OPTIONS_BUTTON_ACTIVEMOD);</OnLoad>
+					<OnShow>AutoRespondOptions_InitActiveMod();</OnShow>
+					<OnClick>AutoRespondOptions_ToggleActiveMod();</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="$parent_InFight" inherits="OptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_ActiveMod">
+						<Offset x="0" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_OPTIONS_BUTTON_INFIGHT);</OnLoad>
+					<OnShow>AutoRespondOptions_InitInFight();</OnShow>
+					<OnClick>AutoRespondOptions_ToggleInFight();</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<Frame name="$parent_Scaling">
+				<Size x="280" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_InFight">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parent_Slider" inherits="OptionsSliderTemplate">
+						<Size x="270" y="17" />
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP">
+								<Offset x="0" y="-20" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnValueChanged>AutoRespondOptions_Scaling_OnValueChanged();</OnValueChanged>
+							<OnShow>AutoRespondOptions_Scaling_OnShow();</OnShow>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+			
+			<CheckButton name="$parent_SpamCheck" inherits="OptionsCheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_Scaling">
+						<Offset x="0" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(self:GetName().."Text"):SetText(AUTO_RESPOND_OPTIONS_BUTTON_SPAMCHECK);</OnLoad>
+					<OnShow>AutoRespondOptions_InitSpamCheck();</OnShow>
+					<OnClick>AutoRespondOptions_ToggleSpamCheck();</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<Frame name="$parent_SpamTimer">
+				<Size x="280" y="40"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_SpamCheck">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parent_Slider" inherits="OptionsSliderTemplate">
+						<Size x="270" y="17" />
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP">
+								<Offset x="0" y="-20" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnValueChanged>AutoRespondOptions_SpamTimer_OnValueChanged();</OnValueChanged>
+							<OnShow>AutoRespondOptions_SpamTimer_OnShow();</OnShow>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+			
+			<Button name="$parent_ButtonExit" inherits="UIPanelButtonTemplate">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+						<Offset x="-10" y="10"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetText(AUTO_RESPOND_BUTTON_EXIT_TEXT)</OnLoad>
+					<OnClick>self:GetParent():Hide();</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:OnBackdropLoaded()
+			</OnLoad>
+	        <OnMouseDown>self:StartMoving();</OnMouseDown>
+            <OnMouseUp>self:StopMovingOrSizing();</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

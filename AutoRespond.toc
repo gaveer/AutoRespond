@@ -1,0 +1,7 @@
+## Interface: 90100
+## Title: AutoRespond Reborn- Updated
+## Author: Ayradyss/Chef de Loup - Updated & Modified by Andrew "HellsGuard" Allan -HF Creations
+## Notes: Automatically sends a whispered response to someone who whispers you using the prescribed string.
+## SavedVariablesPerCharacter: AutoRespondOptions, AutoRespondMainOptions
+
+AutoRespond.xml
